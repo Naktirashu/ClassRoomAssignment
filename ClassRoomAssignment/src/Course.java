@@ -5,18 +5,23 @@ public class Course {
 	private String requestedEvening;
 	private int enrollmentNumber;
 	
+	private String roomType;
 	private boolean science = false;
 	private boolean computer = false;
 	private boolean regular = false;
 	
-	private String roomType;
+	private boolean lowerDivision = false;
+	
+	private int meetDayNum;
+	private String meetDayString;
+	
 	
 	private String preferredLocation;
 
 	
 	public Course(String courseName, String requestedEvening, int enrollmentNumber, String roomType, boolean science, boolean computer,
-			boolean regular, String preferredLocation) {
-		super();
+			boolean regular, String preferredLocation, boolean lowerDivision) {
+	
 		this.courseName = courseName;
 		this.requestedEvening = requestedEvening;
 		this.enrollmentNumber = enrollmentNumber;
@@ -25,6 +30,26 @@ public class Course {
 		this.computer = computer;
 		this.regular = regular;
 		this.preferredLocation = preferredLocation;
+		this.lowerDivision = lowerDivision;
+		
+		switch (requestedEvening){
+		case "M":
+			this.meetDayNum = 0;
+			this.meetDayString = "Monday";
+			break;
+		case "T":
+			this.meetDayNum = 1;
+			this.meetDayString = "Tuesday";
+			break;
+		case "W":
+			this.meetDayNum = 2;
+			this.meetDayString = "Wednesday";
+			break;
+		case "H":
+			this.meetDayNum = 3;
+			this.meetDayString = "Thursday";
+			break;
+		}
 	}
 	
 	
@@ -34,7 +59,7 @@ public class Course {
 	
 	
 	
-
+//GETTERS AND SETTERS
 	public String getCourseName() {
 		return courseName;
 	}
@@ -98,6 +123,30 @@ public class Course {
 
 	public void setPreferredLocation(String preferredLocation) {
 		this.preferredLocation = preferredLocation;
+	}
+
+	public boolean isLowerDivision() {
+		return lowerDivision;
+	}
+
+	public void setLowerDivision(boolean lowerDivision) {
+		this.lowerDivision = lowerDivision;
+	}
+
+	public int getMeetDayNum() {
+		return meetDayNum;
+	}
+
+	public void setMeetDayNum(int meetDayNum) {
+		this.meetDayNum = meetDayNum;
+	}
+
+	public String getMeetDayString() {
+		return meetDayString;
+	}
+
+	public void setMeetDayString(String meetDayString) {
+		this.meetDayString = meetDayString;
 	}
 	
 	
