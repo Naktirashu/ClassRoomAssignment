@@ -163,7 +163,11 @@ public class Gui extends JFrame {
 					// FIXME Add calculation logic here
 					
 					findComputerSchedule();
-					printComputerSchedule();
+					findScienceSchedule();
+					
+					
+					//How many classes are unassigned? Print them!
+					printUnassignedCourse();
 					
 
 				} else {
@@ -408,9 +412,12 @@ public class Gui extends JFrame {
 		}
 		
 		//Sort all classrooms type arrays by class size
-		sortComputerList();
-		sortScienceList();
-		sortRegularList();
+		sortComputerRoomList();
+		sortScienceRoomList();
+		sortRegularRoomList();
+		sortComputerClassList();
+		sortScienceClassList();
+		sortRegularClassList();
 	}
 	
 	
@@ -424,11 +431,14 @@ public class Gui extends JFrame {
 									.getMeetDayNum()] == null) {
 						computerClassRoomList.get(i).getAvailiabilitySchedule()[course
 								.getMeetDayNum()] = course;
+						//We found a room!!! YAY!
+						course.setRoomFound(true);
 						break;
 					}
 				}
 			}
 		}
+		printComputerSchedule();
 	}
 	
 	public void printComputerSchedule(){
@@ -451,8 +461,50 @@ public class Gui extends JFrame {
 			}
 		}
 	}
+	
+	public void findScienceSchedule(){
+		//FIXME Prelim calc, change for all kinds of limitations, need to sort by class size too , to limit conflicts
+		for (Course course : scienceCourseList) {
+			for (int i = 0; i < scienceClassRoomList.size(); i++) {
+				if (course.getPreferredLocation().equals(scienceClassRoomList.get(i).getLocation())) {
+					if (course.getEnrollmentNumber() <= scienceClassRoomList.get(i).getCapacity()
+							&& scienceClassRoomList.get(i).getAvailiabilitySchedule()[course
+									.getMeetDayNum()] == null) {
+						scienceClassRoomList.get(i).getAvailiabilitySchedule()[course
+								.getMeetDayNum()] = course;
+						//We found a room!!! YAY!
+						course.setRoomFound(true);
+						break;
+					}
+				}
+			}
+		}
+		
+		printScienceSchedule();
+	}
+	
+	public void printScienceSchedule(){
+		System.out.println("\n*********************************** \n");
+		System.out.println("Science Class Rooms:\n");
+		for (int i = 0; i < scienceClassRoomList.size(); i++) {
+			System.out.println(
+					"	Class Room " + i + " Name is: " + scienceClassRoomList.get(i).getRoomNumber() + " Size: " + scienceClassRoomList.get(i).getCapacity());
+			System.out.println("Weekly Schedule:");
+			for (int j = 0; j < scienceClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
+				try {
+					System.out.println("Day " + j + "= "
+							+ scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: " + scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber());
 
-	public static void sortComputerList(){
+				} catch (Exception e) {
+					System.out.println(
+							"Day " + j + "= " + scienceClassRoomList.get(i).getAvailiabilitySchedule()[j]);
+				}
+
+			}
+		}
+	}
+
+	public static void sortComputerRoomList(){
 		
 		
 		System.out.println("Sorting the Computer Room objects by class size.......");
@@ -472,7 +524,7 @@ public class Gui extends JFrame {
 		});
 	}
 	
-	public static void sortScienceList(){
+	public static void sortScienceRoomList(){
 		
 	
 		System.out.println("Sorting the Science Room objects by class size .......");
@@ -492,7 +544,7 @@ public class Gui extends JFrame {
 		});
 	}
 
-	public static void sortRegularList(){
+	public static void sortRegularRoomList(){
 		
 		
 		System.out.println("Sorting the Regular Room objects by class size .......");
@@ -512,6 +564,115 @@ public class Gui extends JFrame {
 		});
 	}	
 
+	public static void sortComputerClassList(){
+		
+		
+		System.out.println("Sorting the Computer Course objects by Enrollment size.......");
+		
+		
+		Collections.sort(computerCourseList, new Comparator<Course>() {
+
+		    @Override
+		    public int compare(Course c1, Course c2) {
+		        if (c1.getEnrollmentNumber() < c2.getEnrollmentNumber())
+		            return -1;
+		        else if (c1.getEnrollmentNumber() > c2.getEnrollmentNumber())
+		            return 1;
+		        return 0;
+		    }
+
+		});
+	}
+	
+	public static void sortScienceClassList(){
+		
+		
+		System.out.println("Sorting the Science Course objects by Enrollment size .......");
+		
+		
+		Collections.sort(scienceCourseList, new Comparator<Course>() {
+
+		    @Override
+		    public int compare(Course c1, Course c2) {
+		        if (c1.getEnrollmentNumber() < c2.getEnrollmentNumber())
+		            return -1;
+		        else if (c1.getEnrollmentNumber() > c2.getEnrollmentNumber())
+		            return 1;
+		        return 0;
+		    }
+
+		});
+	}
+	
+	public static void sortRegularClassList(){
+		
+		
+		System.out.println("Sorting the Regular Course objects by Enrollment size .......\n");
+		
+		
+		Collections.sort(regularCourseList, new Comparator<Course>() {
+
+		    @Override
+		    public int compare(Course c1, Course c2) {
+		        if (c1.getEnrollmentNumber() < c2.getEnrollmentNumber())
+		            return -1;
+		        else if (c1.getEnrollmentNumber() > c2.getEnrollmentNumber())
+		            return 1;
+		        return 0;
+		    }
+
+		});
+	}
+	
+	/**
+	 * Prints the unassigned courses, used for final check debug
+	 */
+	public void printUnassignedCourse(){
+		System.out.println("***********************************************");
+		System.out.println("\n\nUnassigned Courses:");
+		
+		int compCount = 0;
+		int sciCount = 0;
+		int regCount = 0;
+		
+		System.out.println("\nComputer Courses");
+		System.out.println("***********************************************");
+		for (Course course : computerCourseList) {
+			if(!course.isRoomFound()){
+				compCount ++;
+				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
+			}	
+		}
+		if(compCount == 0){
+			System.out.println("All Computer Courses Assigned!\n");
+		}
+		
+		System.out.println("\nScience Courses");
+		System.out.println("***********************************************");
+		for (Course course : scienceCourseList) {
+			if(!course.isRoomFound()){
+				sciCount ++;
+				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
+			}
+		}
+		
+		if(sciCount == 0){
+			System.out.println("All Science Courses Assigned!\n");
+		}
+		
+		System.out.println("\nRegular Courses");
+		System.out.println("***********************************************");
+		for (Course course : regularCourseList) {
+			if(!course.isRoomFound()){
+				regCount ++ ;
+				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
+			}
+		}
+		
+		if(regCount == 0){
+			System.out.println("All Regular Courses Assigned!\n");
+		}
+	}
 	/**
 	 * Sort Alphabetically by sub node name (Source from:
 	 * http://stackoverflow.com/questions/19471005/sorting-an-arraylist-of-objects-alphabetically)

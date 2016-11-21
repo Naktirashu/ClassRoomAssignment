@@ -14,9 +14,10 @@ public class Course {
 	
 	private int meetDayNum;
 	private String meetDayString;
-	
-	
+
 	private String preferredLocation;
+	
+	private boolean roomFound = false;
 
 	
 	public Course(String courseName, String requestedEvening, int enrollmentNumber, String roomType, boolean science, boolean computer,
@@ -147,6 +148,28 @@ public class Course {
 
 	public void setMeetDayString(String meetDayString) {
 		this.meetDayString = meetDayString;
+	}
+
+
+
+
+
+
+
+
+	public boolean isRoomFound() {
+		return roomFound;
+	}
+
+
+
+
+
+
+
+
+	public void setRoomFound(boolean roomFound) {
+		this.roomFound = roomFound;
 	}
 	
 	
