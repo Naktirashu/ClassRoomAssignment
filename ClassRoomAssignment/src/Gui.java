@@ -246,17 +246,15 @@ public class Gui extends JFrame {
 									computer, regular));
 							break;
 						}
-
-						// classRoomList.add(new ClassRoom(location, roomNumber,
-						// capacity, roomType, science, computer, regular));
-
 					} // end else
 				} // end outside if (line != null)
 			} // end selectedFile for loop
 
-			// we have our class data, set the boolean
+			// we have our class data, set the boolean, used for GUI input fail safe!
 			classData = true;
 
+			//Print out the data as we have it now, Should be all available classrooms with empty week schedules
+			
 			System.out.println("Regular Class Rooms:\n");
 			for (int i = 0; i < regularClassRoomList.size(); i++) {
 				System.out.println("	Class Room " + i + " Name is: " + regularClassRoomList.get(i).getRoomNumber());
@@ -367,10 +365,6 @@ public class Gui extends JFrame {
 									location, lowerDivision));
 							break;
 						}
-
-						// courseList.add(new Course(name, day, enrolled,
-						// roomType, science, computer, regular, location));
-
 					} // end else
 				} // end outside if (line != null)
 			} // end selectedFile for loop
@@ -530,12 +524,12 @@ public class Gui extends JFrame {
 		System.out.println("Regular Class Rooms:\n");
 		for (int i = 0; i < regularClassRoomList.size(); i++) {
 			System.out.println(
-					"	Class Room " + i + " Name is: " + regularClassRoomList.get(i).getRoomNumber() + " Size: " + regularClassRoomList.get(i).getCapacity());
+					"	Class Room " + i + " Name is: " + regularClassRoomList.get(i).getRoomNumber() + " Size: " + regularClassRoomList.get(i).getCapacity() + " Lacation: " + regularClassRoomList.get(i).getLocation());
 			System.out.println("Weekly Schedule:");
 			for (int j = 0; j < regularClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
 				try {
 					System.out.println("Day " + j + "= "
-							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: " + regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber());
+							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: " + regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber() + ", Req Location: " + regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation() );
 
 				} catch (Exception e) {
 					System.out.println(
@@ -548,10 +542,7 @@ public class Gui extends JFrame {
 
 	public static void sortComputerRoomList(){
 		
-		
 		System.out.println("Sorting the Computer Room objects by class size.......");
-		
-		
 		Collections.sort(computerClassRoomList, new Comparator<ClassRoom>() {
 
 		    @Override
@@ -568,10 +559,7 @@ public class Gui extends JFrame {
 	
 	public static void sortScienceRoomList(){
 		
-	
 		System.out.println("Sorting the Science Room objects by class size .......");
-		
-		
 		Collections.sort(scienceClassRoomList, new Comparator<ClassRoom>() {
 
 		    @Override
@@ -588,10 +576,7 @@ public class Gui extends JFrame {
 
 	public static void sortRegularRoomList(){
 		
-		
 		System.out.println("Sorting the Regular Room objects by class size .......");
-	
-		
 		Collections.sort(regularClassRoomList, new Comparator<ClassRoom>() {
 
 		    @Override
@@ -608,10 +593,7 @@ public class Gui extends JFrame {
 
 	public static void sortComputerClassList(){
 		
-		
 		System.out.println("Sorting the Computer Course objects by Enrollment size.......");
-		
-		
 		Collections.sort(computerCourseList, new Comparator<Course>() {
 
 		    @Override
@@ -627,11 +609,8 @@ public class Gui extends JFrame {
 	}
 	
 	public static void sortScienceClassList(){
-		
-		
+			
 		System.out.println("Sorting the Science Course objects by Enrollment size .......");
-		
-		
 		Collections.sort(scienceCourseList, new Comparator<Course>() {
 
 		    @Override
@@ -646,14 +625,10 @@ public class Gui extends JFrame {
 		});
 	}
 	
-	public static void sortRegularClassList(){
-		
-		
+	public static void sortRegularClassList(){	
+	
 		System.out.println("Sorting the Regular Course objects by Enrollment size .......\n");
-		
-		
 		Collections.sort(regularCourseList, new Comparator<Course>() {
-
 		    @Override
 		    public int compare(Course c1, Course c2) {
 		        if (c1.getEnrollmentNumber() < c2.getEnrollmentNumber())
@@ -667,15 +642,19 @@ public class Gui extends JFrame {
 	}
 	
 	/**
-	 * Prints the unassigned courses, used for final check debug
+	 * Prints the unassigned courses, used for final check debug, Obviously it will print all are assigned :) *fingers crossed*
 	 */
 	public void printUnassignedCourse(){
 		System.out.println("***********************************************");
 		System.out.println("\n\nUnassigned Courses:");
 		
 		int compCount = 0;
+		int compTotal = 0;
 		int sciCount = 0;
+		int sciTotal = 0;
 		int regCount = 0;
+		int regTotal = 0; 
+		
 		
 		System.out.println("\nComputer Courses");
 		System.out.println("***********************************************");
@@ -683,8 +662,11 @@ public class Gui extends JFrame {
 			if(!course.isRoomFound()){
 				compCount ++;
 				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
-			}	
+			}
+			compTotal ++;
 		}
+		System.out.println("Found Classrooms for " + compTotal + " out of " + computerCourseList.size() + " courses\n");
+		
 		if(compCount == 0){
 			System.out.println("All Computer Courses Assigned!\n");
 		}
@@ -696,8 +678,9 @@ public class Gui extends JFrame {
 				sciCount ++;
 				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
 			}
+			sciTotal ++;
 		}
-		
+		System.out.println("Found Classrooms for " + sciTotal + " out of " + scienceCourseList.size() + " courses\n");
 		if(sciCount == 0){
 			System.out.println("All Science Courses Assigned!\n");
 		}
@@ -709,7 +692,9 @@ public class Gui extends JFrame {
 				regCount ++ ;
 				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
 			}
+			regTotal++;
 		}
+		System.out.println("Found Classrooms for " + regTotal + " out of " + regularCourseList.size() + " courses\n");
 		
 		if(regCount == 0){
 			System.out.println("All Regular Courses Assigned!\n");
@@ -741,6 +726,10 @@ public class Gui extends JFrame {
 
 		return fileName;
 		// saveToFile(fileName + "_search.txt", searchSolutionArray);
+	}
+	
+	public void saveToFile(){
+		
 	}
 
 	public static File getSelectedClassRoomFile() {
