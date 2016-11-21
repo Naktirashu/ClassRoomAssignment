@@ -164,6 +164,9 @@ public class Gui extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if(courseData && classData){
 					System.out.println("Calculating Schedule!!!");
+					//FIXME Add calculation logic here
+					
+					
 				}else{
 					if(!classData){
 						System.out.println("Please Select Class Room Data File!!!");
@@ -174,7 +177,6 @@ public class Gui extends JFrame {
 				}
 				
 				
-				//FIXME Add calculation logic here
 				
 				
 			}
