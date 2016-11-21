@@ -164,6 +164,7 @@ public class Gui extends JFrame {
 					
 					findComputerSchedule();
 					findScienceSchedule();
+					findRegularSchedule();
 					
 					
 					//How many classes are unassigned? Print them!
@@ -498,6 +499,47 @@ public class Gui extends JFrame {
 				} catch (Exception e) {
 					System.out.println(
 							"Day " + j + "= " + scienceClassRoomList.get(i).getAvailiabilitySchedule()[j]);
+				}
+
+			}
+		}
+	}
+	
+	public void findRegularSchedule(){
+		//FIXME Prelim calc, change for all kinds of limitations, need to sort by class size too , to limit conflicts
+		for (Course course : regularCourseList) {
+			for (int i = 0; i < regularClassRoomList.size(); i++) {
+				if (course.getPreferredLocation().equals(regularClassRoomList.get(i).getLocation())) {
+					if (course.getEnrollmentNumber() <= regularClassRoomList.get(i).getCapacity()
+							&& regularClassRoomList.get(i).getAvailiabilitySchedule()[course
+									.getMeetDayNum()] == null) {
+						regularClassRoomList.get(i).getAvailiabilitySchedule()[course
+								.getMeetDayNum()] = course;
+						//We found a room!!! YAY!
+						course.setRoomFound(true);
+						break;
+					}
+				}
+			}
+		}
+		printRegularSchedule();
+	}
+	
+	public void printRegularSchedule(){
+		System.out.println("\n*********************************** \n");
+		System.out.println("Regular Class Rooms:\n");
+		for (int i = 0; i < regularClassRoomList.size(); i++) {
+			System.out.println(
+					"	Class Room " + i + " Name is: " + regularClassRoomList.get(i).getRoomNumber() + " Size: " + regularClassRoomList.get(i).getCapacity());
+			System.out.println("Weekly Schedule:");
+			for (int j = 0; j < regularClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
+				try {
+					System.out.println("Day " + j + "= "
+							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: " + regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber());
+
+				} catch (Exception e) {
+					System.out.println(
+							"Day " + j + "= " + regularClassRoomList.get(i).getAvailiabilitySchedule()[j]);
 				}
 
 			}
