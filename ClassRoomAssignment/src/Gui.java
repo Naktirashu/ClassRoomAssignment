@@ -60,6 +60,11 @@ public class Gui extends JFrame {
 	// used to determine if we have our data before calculating our schedule
 	private boolean courseData = false;
 	private boolean classData = false;
+	
+	private boolean scienceAllScheduled = false;
+	private boolean computerAllScheduled = false;
+	private boolean regularAllScheduled = false;
+	
 
 	/**
 	 * Launch the application.
@@ -658,6 +663,8 @@ public class Gui extends JFrame {
 		
 		System.out.println("\nComputer Courses");
 		System.out.println("***********************************************");
+		
+		//Print all unassigned courses
 		for (Course course : computerCourseList) {
 			if(!course.isRoomFound()){
 				compCount ++;
@@ -668,11 +675,15 @@ public class Gui extends JFrame {
 		System.out.println("Found Classrooms for " + compTotal + " out of " + computerCourseList.size() + " courses\n");
 		
 		if(compCount == 0){
+			//We scheduled all Computer classes to rooms
+			computerAllScheduled = true;
 			System.out.println("All Computer Courses Assigned!\n");
 		}
 		
 		System.out.println("\nScience Courses");
 		System.out.println("***********************************************");
+		
+		//Print all unassigned courses
 		for (Course course : scienceCourseList) {
 			if(!course.isRoomFound()){
 				sciCount ++;
@@ -682,11 +693,15 @@ public class Gui extends JFrame {
 		}
 		System.out.println("Found Classrooms for " + sciTotal + " out of " + scienceCourseList.size() + " courses\n");
 		if(sciCount == 0){
+			//We scheduled all Science classes to rooms
+			scienceAllScheduled = true;
 			System.out.println("All Science Courses Assigned!\n");
 		}
 		
 		System.out.println("\nRegular Courses");
 		System.out.println("***********************************************");
+		
+		//Print all unassigned courses
 		for (Course course : regularCourseList) {
 			if(!course.isRoomFound()){
 				regCount ++ ;
@@ -697,6 +712,8 @@ public class Gui extends JFrame {
 		System.out.println("Found Classrooms for " + regTotal + " out of " + regularCourseList.size() + " courses\n");
 		
 		if(regCount == 0){
+			//We scheduled all Regular classes to rooms
+			regularAllScheduled = true;
 			System.out.println("All Regular Courses Assigned!\n");
 		}
 	}
