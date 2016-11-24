@@ -446,16 +446,20 @@ public class Gui extends JFrame {
 		System.out.println("Computer Class Rooms:\n");
 		for (int i = 0; i < computerClassRoomList.size(); i++) {
 			System.out.println(
-					"	Class Room " + i + " Name is: " + computerClassRoomList.get(i).getRoomNumber() + " Size: " + computerClassRoomList.get(i).getCapacity());
+					"	Class Room " + i + " Name is: " + computerClassRoomList.get(i).getRoomNumber()
+					+ " Size: " + computerClassRoomList.get(i).getCapacity()
+					+ " Location: " + computerClassRoomList.get(i).getLocation());
 			System.out.println("Weekly Schedule:");
 			for (int j = 0; j < computerClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
 				try {
 					System.out.println("Day " + j + "= "
-							+ computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: " + computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber());
+							+ computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: "
+							+ computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber() + ", Req Location: "
+							+ computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation());
 
 				} catch (Exception e) {
 					System.out.println(
-							"Day " + j + "= " + computerClassRoomList.get(i).getAvailiabilitySchedule()[j]);
+							"Day " + j + "= Room Avialable");
 				}
 
 			}
@@ -488,16 +492,20 @@ public class Gui extends JFrame {
 		System.out.println("Science Class Rooms:\n");
 		for (int i = 0; i < scienceClassRoomList.size(); i++) {
 			System.out.println(
-					"	Class Room " + i + " Name is: " + scienceClassRoomList.get(i).getRoomNumber() + " Size: " + scienceClassRoomList.get(i).getCapacity());
+					"	Class Room " + i + " Name is: " + scienceClassRoomList.get(i).getRoomNumber()
+					+ " Size: " + scienceClassRoomList.get(i).getCapacity()
+					+ " Location: " + scienceClassRoomList.get(i).getLocation());
 			System.out.println("Weekly Schedule:");
 			for (int j = 0; j < scienceClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
 				try {
 					System.out.println("Day " + j + "= "
-							+ scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: " + scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber());
+							+ scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: "
+							+ scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber()
+							+ ", Req Location: " + scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation());
 
 				} catch (Exception e) {
 					System.out.println(
-							"Day " + j + "= " + scienceClassRoomList.get(i).getAvailiabilitySchedule()[j]);
+							"Day " + j + "= Room Avialable");
 				}
 
 			}
@@ -529,16 +537,20 @@ public class Gui extends JFrame {
 		System.out.println("Regular Class Rooms:\n");
 		for (int i = 0; i < regularClassRoomList.size(); i++) {
 			System.out.println(
-					"	Class Room " + i + " Name is: " + regularClassRoomList.get(i).getRoomNumber() + " Size: " + regularClassRoomList.get(i).getCapacity() + " Lacation: " + regularClassRoomList.get(i).getLocation());
+					"	Class Room " + i + " Name is: " + regularClassRoomList.get(i).getRoomNumber()
+					+ " Size: " + regularClassRoomList.get(i).getCapacity()
+					+ " Location: " + regularClassRoomList.get(i).getLocation());
 			System.out.println("Weekly Schedule:");
 			for (int j = 0; j < regularClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
 				try {
 					System.out.println("Day " + j + "= "
-							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: " + regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber() + ", Req Location: " + regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation() );
+							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: "
+							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber() + ", Req Location: "
+							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation() );
 
 				} catch (Exception e) {
 					System.out.println(
-							"Day " + j + "= " + regularClassRoomList.get(i).getAvailiabilitySchedule()[j]);
+							"Day " + j + "= Room Avialable");
 				}
 
 			}
