@@ -163,6 +163,15 @@ public class Gui extends JFrame {
 		btnMakeSchedule.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
+				
+				try {
+					writer = new PrintWriter("Schedule.txt");
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				
 				if (courseData && classData) {
 					System.out.println("Calculating Schedule!!!");
 					// FIXME Add calculation logic here
@@ -174,6 +183,9 @@ public class Gui extends JFrame {
 					
 					//How many classes are unassigned? Print them!
 					printUnassignedCourse();
+					
+					//Close print writer
+					writer.close();
 					
 
 				} else {
@@ -202,24 +214,23 @@ public class Gui extends JFrame {
 				String line = input.readLine();
 
 				if (line != null) {
-					// System.out.println("line is: " + line);
-					// System.out.println("Line length = " + line.length());
-
+				
 					if (line.length() == 0) {
 						// this is the blank line, do nothing!
 					}
 
-					// this is for the creation of new sub nodes
+					// this is for the creation of new classroom obj's
 					else {
 						String[] tmpArray = line.split("\\s+");
 
-						/*
-						 * System.out.println("tmpArray[0]= " + tmpArray[0]);
-						 * System.out.println("tmpArray[1]= " + tmpArray[1]);
-						 * System.out.println("tmpArray[2]= " + tmpArray[2]);
-						 * System.out.println("tmpArray[3]= " + tmpArray[3]);
-						 */
-
+						//checks to see if this is a properly formatted classroom file
+						if(tmpArray[0].toString().length() > 3){
+							System.out.println("Invalid File Type!!!!");
+							System.out.println("Please choose a properly formatted classroom file!");
+							
+							return;
+							
+						}
 						String location = tmpArray[0];
 						String roomNumber = tmpArray[1];
 						int capacity = Integer.parseInt(tmpArray[2]);
@@ -230,9 +241,7 @@ public class Gui extends JFrame {
 						boolean computer = false;
 						boolean regular = false;
 
-						// FIXME maybe add an arrayList for each room type, so
-						// we don't need to sort later. Do the obj creation
-						// within cases
+						//create obj's according to class room type
 						switch (tmpArray[3]) {
 
 						case "R":
@@ -259,40 +268,12 @@ public class Gui extends JFrame {
 			classData = true;
 
 			//Print out the data as we have it now, Should be all available classrooms with empty week schedules
-			
-			System.out.println("Regular Class Rooms:\n");
-			for (int i = 0; i < regularClassRoomList.size(); i++) {
-				System.out.println("	Class Room " + i + " Name is: " + regularClassRoomList.get(i).getRoomNumber());
-				System.out.println("Weekly Schedule:");
-				for (int j = 0; j < regularClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
-					System.out.println("Day " + j + "= " + regularClassRoomList.get(i).getAvailiabilitySchedule()[j]);
-
-				}
-			}
-			System.out.println("\n*********************************** \n");
-			System.out.println("Computer Class Rooms:\n");
-			for (int i = 0; i < computerClassRoomList.size(); i++) {
-				System.out.println("	Class Room " + i + " Name is: " + computerClassRoomList.get(i).getRoomNumber());
-				System.out.println("Weekly Schedule:");
-				for (int j = 0; j < computerClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
-					System.out.println("Day " + j + "= " + computerClassRoomList.get(i).getAvailiabilitySchedule()[j]);
-
-				}
-			}
-			System.out.println("\n*********************************** \n");
-			System.out.println("Science Class Rooms:\n");
-			for (int i = 0; i < scienceClassRoomList.size(); i++) {
-				System.out.println("	Class Room " + i + " Name is: " + scienceClassRoomList.get(i).getRoomNumber());
-				System.out.println("Weekly Schedule:");
-				for (int j = 0; j < scienceClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
-					System.out.println("Day " + j + "= " + scienceClassRoomList.get(i).getAvailiabilitySchedule()[j]);
-
-				}
-			}
-			System.out.println("\n*********************************** \n");
+			parseClassRoomDataPrint();
 
 		} catch (IOException io) {
-			io.printStackTrace();
+			System.out.println("Invalid File Type!!!!");
+			System.out.println("Please choose a classroom file!");
+			//io.printStackTrace();
 		}
 
 	}
@@ -309,9 +290,7 @@ public class Gui extends JFrame {
 				String line = input.readLine();
 
 				if (line != null) {
-					// System.out.println("line is: " + line);
-					// System.out.println("Line length = " + line.length());
-
+					
 					if (line.length() == 0) {
 						// this is the blank line, do nothing!
 					}
@@ -320,14 +299,13 @@ public class Gui extends JFrame {
 					else {
 						String[] tmpArray = line.split("\\s+");
 
-						/*
-						 * System.out.println("tmpArray[0]= " + tmpArray[0]);
-						 * System.out.println("tmpArray[1]= " + tmpArray[1]);
-						 * System.out.println("tmpArray[2]= " + tmpArray[2]);
-						 * System.out.println("tmpArray[3]= " + tmpArray[3]);
-						 * System.out.println("tmpArray[4]= " + tmpArray[4]);
-						 */
-
+						if(tmpArray[0].toString().length() < 4){
+							System.out.println("Invalid File Type!!!!");
+							System.out.println("Please choose a properly formatted course file!");
+							
+							return;
+							
+						}
 						String name = tmpArray[0];
 						String day = tmpArray[1];
 						int enrolled = Integer.parseInt(tmpArray[2]);
@@ -349,9 +327,7 @@ public class Gui extends JFrame {
 							lowerDivision = true;
 						}
 
-						// FIXME maybe add an arrayList for each class type, so
-						// we don't need to sort later. Do the obj creation
-						// within cases
+						//create obj's according to class type
 						switch (tmpArray[3]) {
 
 						case "R":
@@ -377,41 +353,15 @@ public class Gui extends JFrame {
 			// we have our data, set the boolean
 			courseData = true;
 
-			for (int i = 0; i < regularCourseList.size(); i++) {
-				System.out.println(" Regular Course " + i + " Name is: " + regularCourseList.get(i).getCourseName());
-				System.out.println("-Meets on " + regularCourseList.get(i).getRequestedEvening() + ", "
-						+ regularCourseList.get(i).getMeetDayString());
-				System.out.println("-Needs a " + regularCourseList.get(i).getRoomType() + " room");
-				System.out.println("Lower Division: " + regularCourseList.get(i).isLowerDivision() + "\n");
-			}
-
-			System.out.println("\n*********************************** \n");
-
-			for (int i = 0; i < computerCourseList.size(); i++) {
-				System.out.println("Computer Course " + i + " Name is: " + computerCourseList.get(i).getCourseName());
-				System.out.println("-Meets on " + computerCourseList.get(i).getRequestedEvening() + ", "
-						+ computerCourseList.get(i).getMeetDayString());
-				System.out.println("-Needs a " + computerCourseList.get(i).getRoomType() + " room");
-				System.out.println("Lower Division: " + computerCourseList.get(i).isLowerDivision() + "\n");
-			}
-
-			System.out.println("\n*********************************** \n");
-
-			for (int i = 0; i < scienceCourseList.size(); i++) {
-				System.out.println("Science Course " + i + " Name is: " + scienceCourseList.get(i).getCourseName());
-				System.out.println("-Meets on " + scienceCourseList.get(i).getRequestedEvening() + ", "
-						+ scienceCourseList.get(i).getMeetDayString());
-				System.out.println("-Needs a " + scienceCourseList.get(i).getRoomType() + " room");
-				System.out.println("Lower Division: " + scienceCourseList.get(i).isLowerDivision() + "\n");
-			}
-
-			System.out.println("\n*********************************** \n");
+			parseCourseDataPrint();
 
 		} catch (IOException io) {
-			io.printStackTrace();
+			System.out.println("Invalid File Type!!!!");
+			System.out.println("Please choose a course file!");
+			//io.printStackTrace();
 		}
 		
-		//Sort all classrooms type arrays by class size
+		//If we made it here, we have both files. Sort all classroom/course type arrays by class/enrollment size
 		sortComputerRoomList();
 		sortScienceRoomList();
 		sortRegularRoomList();
@@ -441,31 +391,6 @@ public class Gui extends JFrame {
 		printComputerSchedule();
 	}
 	
-	public void printComputerSchedule(){
-		System.out.println("\n*********************************** \n");
-		System.out.println("Computer Class Rooms:\n");
-		for (int i = 0; i < computerClassRoomList.size(); i++) {
-			System.out.println(
-					"	Class Room " + i + " Name is: " + computerClassRoomList.get(i).getRoomNumber()
-					+ " Size: " + computerClassRoomList.get(i).getCapacity()
-					+ " Location: " + computerClassRoomList.get(i).getLocation());
-			System.out.println("Weekly Schedule:");
-			for (int j = 0; j < computerClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
-				try {
-					System.out.println("Day " + j + "= "
-							+ computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: "
-							+ computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber() + ", Req Location: "
-							+ computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation());
-
-				} catch (Exception e) {
-					System.out.println(
-							"Day " + j + "= Room Avialable");
-				}
-
-			}
-		}
-	}
-	
 	public void findScienceSchedule(){
 		//FIXME Prelim calc, change for all kinds of limitations, need to sort by class size too , to limit conflicts
 		for (Course course : scienceCourseList) {
@@ -485,31 +410,6 @@ public class Gui extends JFrame {
 		}
 		
 		printScienceSchedule();
-	}
-	
-	public void printScienceSchedule(){
-		System.out.println("\n*********************************** \n");
-		System.out.println("Science Class Rooms:\n");
-		for (int i = 0; i < scienceClassRoomList.size(); i++) {
-			System.out.println(
-					"	Class Room " + i + " Name is: " + scienceClassRoomList.get(i).getRoomNumber()
-					+ " Size: " + scienceClassRoomList.get(i).getCapacity()
-					+ " Location: " + scienceClassRoomList.get(i).getLocation());
-			System.out.println("Weekly Schedule:");
-			for (int j = 0; j < scienceClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
-				try {
-					System.out.println("Day " + j + "= "
-							+ scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: "
-							+ scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber()
-							+ ", Req Location: " + scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation());
-
-				} catch (Exception e) {
-					System.out.println(
-							"Day " + j + "= Room Avialable");
-				}
-
-			}
-		}
 	}
 	
 	public void findRegularSchedule(){
@@ -532,134 +432,8 @@ public class Gui extends JFrame {
 		printRegularSchedule();
 	}
 	
-	public void printRegularSchedule(){
-		System.out.println("\n*********************************** \n");
-		System.out.println("Regular Class Rooms:\n");
-		for (int i = 0; i < regularClassRoomList.size(); i++) {
-			System.out.println(
-					"	Class Room " + i + " Name is: " + regularClassRoomList.get(i).getRoomNumber()
-					+ " Size: " + regularClassRoomList.get(i).getCapacity()
-					+ " Location: " + regularClassRoomList.get(i).getLocation());
-			System.out.println("Weekly Schedule:");
-			for (int j = 0; j < regularClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
-				try {
-					System.out.println("Day " + j + "= "
-							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Size: "
-							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber() + ", Req Location: "
-							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation() );
-
-				} catch (Exception e) {
-					System.out.println(
-							"Day " + j + "= Room Avialable");
-				}
-
-			}
-		}
-	}
-
-	public static void sortComputerRoomList(){
-		
-		System.out.println("Sorting the Computer Room objects by class size.......");
-		Collections.sort(computerClassRoomList, new Comparator<ClassRoom>() {
-
-		    @Override
-		    public int compare(ClassRoom c1, ClassRoom c2) {
-		        if (c1.getCapacity() < c2.getCapacity())
-		            return -1;
-		        else if (c1.getCapacity() > c2.getCapacity())
-		            return 1;
-		        return 0;
-		    }
-
-		});
-	}
-	
-	public static void sortScienceRoomList(){
-		
-		System.out.println("Sorting the Science Room objects by class size .......");
-		Collections.sort(scienceClassRoomList, new Comparator<ClassRoom>() {
-
-		    @Override
-		    public int compare(ClassRoom s1, ClassRoom s2) {
-		        if (s1.getCapacity() < s2.getCapacity())
-		            return -1;
-		        else if (s1.getCapacity() > s2.getCapacity())
-		            return 1;
-		        return 0;
-		    }
-
-		});
-	}
-
-	public static void sortRegularRoomList(){
-		
-		System.out.println("Sorting the Regular Room objects by class size .......");
-		Collections.sort(regularClassRoomList, new Comparator<ClassRoom>() {
-
-		    @Override
-		    public int compare(ClassRoom r1, ClassRoom r2) {
-		        if (r1.getCapacity() < r2.getCapacity())
-		            return -1;
-		        else if (r1.getCapacity() > r2.getCapacity())
-		            return 1;
-		        return 0;
-		    }
-
-		});
-	}	
-
-	public static void sortComputerClassList(){
-		
-		System.out.println("Sorting the Computer Course objects by Enrollment size.......");
-		Collections.sort(computerCourseList, new Comparator<Course>() {
-
-		    @Override
-		    public int compare(Course c1, Course c2) {
-		        if (c1.getEnrollmentNumber() < c2.getEnrollmentNumber())
-		            return -1;
-		        else if (c1.getEnrollmentNumber() > c2.getEnrollmentNumber())
-		            return 1;
-		        return 0;
-		    }
-
-		});
-	}
-	
-	public static void sortScienceClassList(){
-			
-		System.out.println("Sorting the Science Course objects by Enrollment size .......");
-		Collections.sort(scienceCourseList, new Comparator<Course>() {
-
-		    @Override
-		    public int compare(Course c1, Course c2) {
-		        if (c1.getEnrollmentNumber() < c2.getEnrollmentNumber())
-		            return -1;
-		        else if (c1.getEnrollmentNumber() > c2.getEnrollmentNumber())
-		            return 1;
-		        return 0;
-		    }
-
-		});
-	}
-	
-	public static void sortRegularClassList(){	
-	
-		System.out.println("Sorting the Regular Course objects by Enrollment size .......\n");
-		Collections.sort(regularCourseList, new Comparator<Course>() {
-		    @Override
-		    public int compare(Course c1, Course c2) {
-		        if (c1.getEnrollmentNumber() < c2.getEnrollmentNumber())
-		            return -1;
-		        else if (c1.getEnrollmentNumber() > c2.getEnrollmentNumber())
-		            return 1;
-		        return 0;
-		    }
-
-		});
-	}
-	
 	/**
-	 * Prints the unassigned courses, used for final check debug, Obviously it will print all are assigned :) *fingers crossed*
+	 * Prints the unassigned courses, used for final check.
 	 */
 	public void printUnassignedCourse(){
 		System.out.println("***********************************************");
@@ -729,37 +503,337 @@ public class Gui extends JFrame {
 			System.out.println("All Regular Courses Assigned!\n");
 		}
 	}
+	
 	/**
-	 * Sort Alphabetically by sub node name (Source from:
-	 * http://stackoverflow.com/questions/19471005/sorting-an-arraylist-of-objects-alphabetically)
-	 * 
-	 * @param node
+	 * Used to convert array index integer to day of the week String, used for printing
+	 * @param dayNum
+	 * @return day
 	 */
-	/*
-	 * public static void sortListByAlphabetic(Node node) {
-	 * Collections.sort(node.getSubNodeArray(), new Comparator<SubNode>() {
-	 * public int compare(SubNode s1, SubNode s2) { return
-	 * s1.getName().compareTo(s2.getName()); } }); }
-	 */
-
-	/**
-	 * Replaces the name with the save file name, made by me
-	 */
-	public static String fileRename() {
-		// File naming replacement by me
-		String fileName = selectedCourseFile.getName();
-		// strip off the file type from originally selected file
-		fileName = fileName.replace(".txt", "");
-		fileName = (fileName + "_search.txt");
-		// rename file
-
-		return fileName;
-		// saveToFile(fileName + "_search.txt", searchSolutionArray);
+	public static String dayOfTheWeek(int dayNum){
+		String day = "";
+		
+		switch(dayNum){
+		case 0:
+			day = "Monday    ";
+			break;
+		case 1:
+			day = "Tuesday   ";
+			break;
+		case 2:
+			day = "Wednesday ";
+			break;
+		case 3:
+			day = "Thursday  ";
+			break;
+		}
+		
+		return day;
 	}
 	
-	public void saveToFile(){
+	
+//////////////////////////////////////////////////////////////////	
+/////////////////////////Printing Methods/////////////////////////
+//////////////////////////////////////////////////////////////////
+	
+	/**
+	 * Prints the Parsed Classroom Data to Console
+	 */
+	private void parseClassRoomDataPrint() {
+		System.out.println("Regular Class Rooms:\n");
+		for (int i = 0; i < regularClassRoomList.size(); i++) {
+			System.out.println("	Class Room " + i + " Name is: " + regularClassRoomList.get(i).getRoomNumber());
+			System.out.println("Weekly Schedule:");
+			for (int j = 0; j < regularClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
+				System.out.println("Day " + j + "= " + regularClassRoomList.get(i).getAvailiabilitySchedule()[j]);
+
+			}
+		}
+		System.out.println("\n*********************************** \n");
+		System.out.println("Computer Class Rooms:\n");
+		for (int i = 0; i < computerClassRoomList.size(); i++) {
+			System.out.println("	Class Room " + i + " Name is: " + computerClassRoomList.get(i).getRoomNumber());
+			System.out.println("Weekly Schedule:");
+			for (int j = 0; j < computerClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
+				System.out.println("Day " + j + "= " + computerClassRoomList.get(i).getAvailiabilitySchedule()[j]);
+
+			}
+		}
+		System.out.println("\n*********************************** \n");
+		System.out.println("Science Class Rooms:\n");
+		for (int i = 0; i < scienceClassRoomList.size(); i++) {
+			System.out.println("	Class Room " + i + " Name is: " + scienceClassRoomList.get(i).getRoomNumber());
+			System.out.println("Weekly Schedule:");
+			for (int j = 0; j < scienceClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
+				System.out.println("Day " + j + "= " + scienceClassRoomList.get(i).getAvailiabilitySchedule()[j]);
+
+			}
+		}
+		System.out.println("\n*********************************** \n");
 		
 	}
+	
+	/**
+	 * Prints the Parsed Course Data to Console
+	 */
+	private void parseCourseDataPrint() {
+		for (int i = 0; i < regularCourseList.size(); i++) {
+			System.out.println(" Regular Course " + i + " Name is: " + regularCourseList.get(i).getCourseName());
+			System.out.println("-Meets on " + regularCourseList.get(i).getRequestedEvening() + ", "
+					+ regularCourseList.get(i).getMeetDayString());
+			System.out.println("-Needs a " + regularCourseList.get(i).getRoomType() + " room");
+			System.out.println("Lower Division: " + regularCourseList.get(i).isLowerDivision() + "\n");
+		}
+
+		System.out.println("\n*********************************** \n");
+
+		for (int i = 0; i < computerCourseList.size(); i++) {
+			System.out.println("Computer Course " + i + " Name is: " + computerCourseList.get(i).getCourseName());
+			System.out.println("-Meets on " + computerCourseList.get(i).getRequestedEvening() + ", "
+					+ computerCourseList.get(i).getMeetDayString());
+			System.out.println("-Needs a " + computerCourseList.get(i).getRoomType() + " room");
+			System.out.println("Lower Division: " + computerCourseList.get(i).isLowerDivision() + "\n");
+		}
+
+		System.out.println("\n*********************************** \n");
+
+		for (int i = 0; i < scienceCourseList.size(); i++) {
+			System.out.println("Science Course " + i + " Name is: " + scienceCourseList.get(i).getCourseName());
+			System.out.println("-Meets on " + scienceCourseList.get(i).getRequestedEvening() + ", "
+					+ scienceCourseList.get(i).getMeetDayString());
+			System.out.println("-Needs a " + scienceCourseList.get(i).getRoomType() + " room");
+			System.out.println("Lower Division: " + scienceCourseList.get(i).isLowerDivision() + "\n");
+		}
+
+		System.out.println("\n*********************************** \n");
+		
+	}
+	
+	/**
+	 * Prints the Regular Classroom Schedule to File
+	 */
+	public void printRegularSchedule(){
+		writer.println("");
+		writer.println("\n\n*********************************** \n");
+		writer.println("Regular Class Rooms:\n");
+		writer.println("\n*********************************** \n");
+		for (int i = 0; i < regularClassRoomList.size(); i++) {
+			writer.println("		Room " + i );
+			writer.println("Name is: " + regularClassRoomList.get(i).getRoomNumber());
+			writer.println("Capacity: " + regularClassRoomList.get(i).getCapacity());
+			writer.println("Location: " + regularClassRoomList.get(i).getLocation());
+			writer.println("Weekly Schedule:");
+			for (int j = 0; j < regularClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
+				
+				String day = dayOfTheWeek(j);
+			
+				try {
+					writer.println("  " + day + ": "
+							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Enrolled: "
+							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber() + ", Req Location: "
+							+ regularClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation() );
+
+				} catch (Exception e) {
+					writer.println(
+							"  " + day + ": Room Avialable");
+				}
+
+			}
+			writer.println("\n------------------------------------- \n");
+		}
+	}
+
+	/**
+	 * Prints the Science Classroom Schedule to File
+	 */
+	public void printScienceSchedule(){
+		writer.println("");
+		writer.println("\n\n*********************************** \n");
+		writer.println("Science Class Rooms:\n");
+		writer.println("\n*********************************** \n");
+		for (int i = 0; i < scienceClassRoomList.size(); i++) {
+			writer.println("		Room " + i );
+			writer.println("Name is: " + scienceClassRoomList.get(i).getRoomNumber());
+			writer.println("Capacity: " + scienceClassRoomList.get(i).getCapacity());
+			writer.println("Location: " + scienceClassRoomList.get(i).getLocation());
+			writer.println("Weekly Schedule:");
+			for (int j = 0; j < scienceClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
+				String day = dayOfTheWeek(j);
+				try {
+					writer.println("  " + day + ": "
+							+ scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Enrolled: "
+							+ scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber()
+							+ ", Req Location: " + scienceClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation());
+
+				} catch (Exception e) {
+					writer.println(
+							"  " + day + ": Room Avialable");
+				}
+
+			}
+			writer.println("\n------------------------------------- \n");
+		}
+	}
+	
+	/**
+	 * Prints the Computer Classroom Schedule to File
+	 */
+	public void printComputerSchedule(){
+		writer.println("");
+		writer.println("\n\n*********************************** \n");
+		writer.println("Computer Class Rooms:\n");
+		writer.println("\n*********************************** \n");
+		for (int i = 0; i < computerClassRoomList.size(); i++) {
+			writer.println("		Room " + i );
+					writer.println("Name is: " + computerClassRoomList.get(i).getRoomNumber());
+					writer.println("Capacity: " + computerClassRoomList.get(i).getCapacity());
+					writer.println("Location: " + computerClassRoomList.get(i).getLocation());
+			writer.println("Weekly Schedule:");
+			for (int j = 0; j < computerClassRoomList.get(i).getAvailiabilitySchedule().length; j++) {
+				
+				String day = dayOfTheWeek(j);
+				
+				try {
+					writer.println("  " + day + ": "
+							+ computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Enrolled: "
+							+ computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber() + ", Req Location: "
+							+ computerClassRoomList.get(i).getAvailiabilitySchedule()[j].getPreferredLocation());
+
+				} catch (Exception e) {
+					writer.println(
+							"  " + day + ": Room Avialable");
+				}
+
+			}
+			writer.println("\n------------------------------------- \n");
+		}
+	}
+	
+/////////////////////////////////////////////////////////////////	
+/////////////////////////Sorting Methods/////////////////////////
+/////////////////////////////////////////////////////////////////	
+	
+	/**
+	 * Used to sort the Computer Room type obj's by room size, lowest to highest
+	 */
+	public static void sortComputerRoomList(){
+		
+		System.out.println("Sorting the Computer Room objects by class size.......");
+		Collections.sort(computerClassRoomList, new Comparator<ClassRoom>() {
+
+		    @Override
+		    public int compare(ClassRoom c1, ClassRoom c2) {
+		        if (c1.getCapacity() < c2.getCapacity())
+		            return -1;
+		        else if (c1.getCapacity() > c2.getCapacity())
+		            return 1;
+		        return 0;
+		    }
+
+		});
+	}
+	
+	/**
+	 * Used to sort the Science Room type obj's by room size, lowest to highest
+	 */
+	public static void sortScienceRoomList(){
+		
+		System.out.println("Sorting the Science Room objects by class size .......");
+		Collections.sort(scienceClassRoomList, new Comparator<ClassRoom>() {
+
+		    @Override
+		    public int compare(ClassRoom s1, ClassRoom s2) {
+		        if (s1.getCapacity() < s2.getCapacity())
+		            return -1;
+		        else if (s1.getCapacity() > s2.getCapacity())
+		            return 1;
+		        return 0;
+		    }
+
+		});
+	}
+
+	/**
+	 * Used to sort the Regular Room type obj's by room size, lowest to highest
+	 */
+	public static void sortRegularRoomList(){
+		
+		System.out.println("Sorting the Regular Room objects by class size .......");
+		Collections.sort(regularClassRoomList, new Comparator<ClassRoom>() {
+
+		    @Override
+		    public int compare(ClassRoom r1, ClassRoom r2) {
+		        if (r1.getCapacity() < r2.getCapacity())
+		            return -1;
+		        else if (r1.getCapacity() > r2.getCapacity())
+		            return 1;
+		        return 0;
+		    }
+
+		});
+	}	
+	
+	/**
+	 * Used to sort the Computer Course type obj's by enrollment, lowest to highest
+	 */
+	public static void sortComputerClassList(){
+		
+		System.out.println("Sorting the Computer Course objects by Enrollment size.......");
+		Collections.sort(computerCourseList, new Comparator<Course>() {
+
+		    @Override
+		    public int compare(Course c1, Course c2) {
+		        if (c1.getEnrollmentNumber() < c2.getEnrollmentNumber())
+		            return -1;
+		        else if (c1.getEnrollmentNumber() > c2.getEnrollmentNumber())
+		            return 1;
+		        return 0;
+		    }
+
+		});
+	}
+	
+	/**
+	 * Used to sort the Science Course type obj's by enrollment, lowest to highest
+	 */
+	public static void sortScienceClassList(){
+			
+		System.out.println("Sorting the Science Course objects by Enrollment size .......");
+		Collections.sort(scienceCourseList, new Comparator<Course>() {
+
+		    @Override
+		    public int compare(Course c1, Course c2) {
+		        if (c1.getEnrollmentNumber() < c2.getEnrollmentNumber())
+		            return -1;
+		        else if (c1.getEnrollmentNumber() > c2.getEnrollmentNumber())
+		            return 1;
+		        return 0;
+		    }
+
+		});
+	}
+	
+	/**
+	 * Used to sort the Regular Course type obj's by enrollment, lowest to highest
+	 */
+	public static void sortRegularClassList(){	
+	
+		System.out.println("Sorting the Regular Course objects by Enrollment size .......\n");
+		Collections.sort(regularCourseList, new Comparator<Course>() {
+		    @Override
+		    public int compare(Course c1, Course c2) {
+		        if (c1.getEnrollmentNumber() < c2.getEnrollmentNumber())
+		            return -1;
+		        else if (c1.getEnrollmentNumber() > c2.getEnrollmentNumber())
+		            return 1;
+		        return 0;
+		    }
+
+		});
+	}	
+	
+/////////////////////////////////////////////////////////////////////	
+/////////////////////////Getters and Setters/////////////////////////
+/////////////////////////////////////////////////////////////////////
 
 	public static File getSelectedClassRoomFile() {
 		return selectedClassRoomFile;
