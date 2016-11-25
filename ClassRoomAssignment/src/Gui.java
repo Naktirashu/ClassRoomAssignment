@@ -177,12 +177,19 @@ public class Gui extends JFrame {
 					// FIXME Add calculation logic here
 					
 					findComputerSchedule();
+					//How many computer classes are unassigned? Print them!
+					checkUnassignedComputer();
+					
 					findScienceSchedule();
+					//How many science classes are unassigned? Print them!
+					checkUnassignedScience();
+					
 					findRegularSchedule();
+					//How many regular classes are unassigned? Print them!
+					checkUnassignedRegular();
 					
 					
-					//How many classes are unassigned? Print them!
-					printUnassignedCourse();
+					//printUnassignedCourse();
 					
 					//Close print writer
 					writer.close();
@@ -362,12 +369,8 @@ public class Gui extends JFrame {
 		}
 		
 		//If we made it here, we have both files. Sort all classroom/course type arrays by class/enrollment size
-		sortComputerRoomList();
-		sortScienceRoomList();
-		sortRegularRoomList();
-		sortComputerClassList();
-		sortScienceClassList();
-		sortRegularClassList();
+		sortAll();
+			
 	}
 	
 	
@@ -432,77 +435,6 @@ public class Gui extends JFrame {
 		printRegularSchedule();
 	}
 	
-	/**
-	 * Prints the unassigned courses, used for final check.
-	 */
-	public void printUnassignedCourse(){
-		System.out.println("***********************************************");
-		System.out.println("\n\nUnassigned Courses:");
-		
-		int compCount = 0;
-		int compTotal = 0;
-		int sciCount = 0;
-		int sciTotal = 0;
-		int regCount = 0;
-		int regTotal = 0; 
-		
-		
-		System.out.println("\nComputer Courses");
-		System.out.println("***********************************************");
-		
-		//Print all unassigned courses
-		for (Course course : computerCourseList) {
-			if(!course.isRoomFound()){
-				compCount ++;
-				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
-			}
-			compTotal ++;
-		}
-		System.out.println("Found Classrooms for " + compTotal + " out of " + computerCourseList.size() + " courses\n");
-		
-		if(compCount == 0){
-			//We scheduled all Computer classes to rooms
-			computerAllScheduled = true;
-			System.out.println("All Computer Courses Assigned!\n");
-		}
-		
-		System.out.println("\nScience Courses");
-		System.out.println("***********************************************");
-		
-		//Print all unassigned courses
-		for (Course course : scienceCourseList) {
-			if(!course.isRoomFound()){
-				sciCount ++;
-				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
-			}
-			sciTotal ++;
-		}
-		System.out.println("Found Classrooms for " + sciTotal + " out of " + scienceCourseList.size() + " courses\n");
-		if(sciCount == 0){
-			//We scheduled all Science classes to rooms
-			scienceAllScheduled = true;
-			System.out.println("All Science Courses Assigned!\n");
-		}
-		
-		System.out.println("\nRegular Courses");
-		System.out.println("***********************************************");
-		
-		//Print all unassigned courses
-		for (Course course : regularCourseList) {
-			if(!course.isRoomFound()){
-				regCount ++ ;
-				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
-			}
-			regTotal++;
-		}
-		System.out.println("Found Classrooms for " + regTotal + " out of " + regularCourseList.size() + " courses\n");
-		
-		if(regCount == 0){
-			//We scheduled all Regular classes to rooms
-			regularAllScheduled = true;
-			System.out.println("All Regular Courses Assigned!\n");
-		}
-	}
 	
 	/**
 	 * Used to convert array index integer to day of the week String, used for printing
@@ -634,7 +566,7 @@ public class Gui extends JFrame {
 
 				} catch (Exception e) {
 					writer.println(
-							"  " + day + ": Room Avialable");
+							"  " + day + ": Room Available");
 				}
 
 			}
@@ -666,7 +598,7 @@ public class Gui extends JFrame {
 
 				} catch (Exception e) {
 					writer.println(
-							"  " + day + ": Room Avialable");
+							"  " + day + ": Room Available");
 				}
 
 			}
@@ -700,7 +632,7 @@ public class Gui extends JFrame {
 
 				} catch (Exception e) {
 					writer.println(
-							"  " + day + ": Room Avialable");
+							"  " + day + ": Room Available");
 				}
 
 			}
@@ -708,9 +640,133 @@ public class Gui extends JFrame {
 		}
 	}
 	
+	
+	public void checkUnassignedComputer(){
+		System.out.println("\nUnassigned Computer Courses:");
+		System.out.println("***********************************************");
+		
+		//Unassigned Computer Class Count
+		int compCount = 0;
+		//Total Computer Class Count
+		int compTotal = 0;
+		
+		//boolean to check if the room was found, used to increment count
+		boolean roomFound = false;
+		
+		//Print all unassigned courses in the computer course list
+		for (Course course : computerCourseList) {
+			if(!course.isRoomFound()){
+				//Room wasn't assigned!!
+				
+				//increment unassigned count
+				compCount ++;
+				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());		
+			}else{
+				roomFound = true;
+			}
+			if(roomFound){
+				compTotal ++;
+				roomFound = false;			
+			}
+		}
+		System.out.println("\nFound Classrooms for " + compTotal + " out of " + computerCourseList.size() + " courses\n");
+		
+		if(compCount == 0){
+			//We scheduled all Computer classes to rooms
+			computerAllScheduled = true;
+			System.out.println("All Computer Courses Assigned!\n");
+		}
+	}
+	
+	public void checkUnassignedScience(){
+		//Unassigned Science Class Count
+		int sciCount = 0;
+		//Total Science Class Count
+		int sciTotal = 0;
+		//boolean to check if the room was found, used to increment count
+		boolean roomFound = false;
+		
+		System.out.println("\nUnassigned Science Courses:");
+		System.out.println("***********************************************");
+		
+		//Print all unassigned courses in the science course list
+		for (Course course : scienceCourseList) {
+			if(!course.isRoomFound()){
+				//Room wasn't assigned!!
+				
+				//increment unassigned count
+				sciCount ++;
+				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
+			}else{
+				roomFound = true;
+			}
+			if(roomFound){
+				sciTotal ++;
+				roomFound = false;	
+			}
+		}
+		System.out.println("\nFound Classrooms for " + sciTotal + " out of " + scienceCourseList.size() + " courses\n");
+		if(sciCount == 0){
+			//We scheduled all Science classes to rooms
+			scienceAllScheduled = true;
+			System.out.println("All Science Courses Assigned!\n");
+		}
+	}
+	
+	public void checkUnassignedRegular(){
+		//Unassigned Regular Class Count
+		int regCount = 0;
+		//Total Regular Class Count
+		int regTotal = 0; 
+		//boolean to check if the room was found, used to increment count
+		boolean roomFound = false;
+		
+		System.out.println("\nUnassigned Regular Courses:");
+		System.out.println("***********************************************");
+		
+		//Print all unassigned courses in the regular course list
+		for (Course course : regularCourseList) {
+			if(!course.isRoomFound()){
+				//Room wasn't assigned!!
+				
+				//increment unassigned count
+				regCount ++ ;
+				System.out.println(course.getCourseName() + " Requested location: " + course.getPreferredLocation());
+			}else{
+				roomFound = true;
+			}
+			
+			if(roomFound){
+				regTotal++;	
+				roomFound = false;	
+			}
+		}
+		System.out.println("\nFound Classrooms for " + regTotal + " out of " + regularCourseList.size() + " courses\n");
+		
+		if(regCount == 0){
+			//We scheduled all Regular classes to rooms
+			regularAllScheduled = true;
+			System.out.println("All Regular Courses Assigned!\n");
+		}	
+	}
+	
+	
+	
 /////////////////////////////////////////////////////////////////	
 /////////////////////////Sorting Methods/////////////////////////
 /////////////////////////////////////////////////////////////////	
+	
+	/**
+	 * Call the Sort Methods
+	 */
+	private void sortAll() {
+		sortComputerRoomList();
+		sortScienceRoomList();
+		sortRegularRoomList();
+		sortComputerClassList();
+		sortScienceClassList();
+		sortRegularClassList();	
+	}
 	
 	/**
 	 * Used to sort the Computer Room type obj's by room size, lowest to highest
