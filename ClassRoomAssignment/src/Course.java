@@ -1,22 +1,31 @@
 
 public class Course {
 	
+	//name of course
 	private String courseName;
+	//night course is held
 	private String requestedEvening;
+	//number of students in course
 	private int enrollmentNumber;
 	
+	//Room Type string used for printing
 	private String roomType;
+	
+	//booleans used to determine which array to move into
 	private boolean science = false;
 	private boolean computer = false;
 	private boolean regular = false;
 	
+	//does this course require a lowerDivision compatible room?
 	private boolean lowerDivision = false;
 	
+	//day of the week number, used for assigning into week schedule array
 	private int meetDayNum;
+	//day of the week string, used for printing
 	private String meetDayString;
-
+	//this location is used first, unless there is a conflict and it must move
 	private String preferredLocation;
-	
+	//used to determined if we have found a location for this course
 	private boolean roomFound = false;
 
 	
@@ -27,12 +36,18 @@ public class Course {
 		this.requestedEvening = requestedEvening;
 		this.enrollmentNumber = enrollmentNumber;
 		this.roomType = roomType;
+		
+		
 		this.science = science;
 		this.computer = computer;
 		this.regular = regular;
 		this.preferredLocation = preferredLocation;
+		
+		//Does this class need to meet at a lower division compatible location?
 		this.lowerDivision = lowerDivision;
 		
+		
+		//Sets the week name and number, number used for schedule assignment, name used for printing
 		switch (requestedEvening){
 		case "M":
 			this.meetDayNum = 0;
@@ -60,7 +75,11 @@ public class Course {
 	
 	
 	
-//GETTERS AND SETTERS
+/////////////////////////////////////////////////////////////////////	
+/////////////////////////Getters and Setters/////////////////////////
+/////////////////////////////////////////////////////////////////////
+	
+	
 	public String getCourseName() {
 		return courseName;
 	}

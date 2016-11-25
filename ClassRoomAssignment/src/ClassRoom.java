@@ -1,16 +1,26 @@
 
 
 public class ClassRoom {
-
+	
+	//Campus where classroom is located
 	private String location;
+	//room number
 	private String roomNumber;
+	//amount of students classroom can hold
 	private int capacity;
+	
+	//type of class room
 	private boolean science = false;
 	private boolean computer = false;
 	private boolean regular = false;
 	
+	//type of classroom, String used for printing
 	private String roomType;
 	
+	//can lower division courses meet here?
+	private boolean lowerDivisionCompatible = false;
+	
+	//weekly schedule
 	private Course[] availiabilitySchedule;
 	
 	
@@ -26,9 +36,22 @@ public class ClassRoom {
 		this.computer = computer;
 		this.regular = regular;
 		
+		//Create the empty week schedule
 		availiabilitySchedule = new Course[4];
 		
+		//check to see if its a lower Division compatible room
+		switch(location){
+		case "MDW":
+		case "STP":
+			lowerDivisionCompatible = true;
+			break;
+		default:
+		}	
 	}
+	
+/////////////////////////////////////////////////////////////////////	
+/////////////////////////Getters and Setters/////////////////////////
+/////////////////////////////////////////////////////////////////////	
 
 	public String getLocation() {
 		return location;
@@ -92,6 +115,14 @@ public class ClassRoom {
 
 	public void setAvailiabilitySchedule(Course[] availiabilitySchedule) {
 		this.availiabilitySchedule = availiabilitySchedule;
+	}
+
+	public boolean isLowerDivisionCompatible() {
+		return lowerDivisionCompatible;
+	}
+
+	public void setLowerDivisionCompatible(boolean lowerDivisionCompatible) {
+		this.lowerDivisionCompatible = lowerDivisionCompatible;
 	}
 
 
