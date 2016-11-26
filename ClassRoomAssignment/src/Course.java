@@ -27,6 +27,9 @@ public class Course {
 	private String preferredLocation;
 	//used to determined if we have found a location for this course
 	private boolean roomFound = false;
+	
+	private boolean checkedDifferentCampus = false;
+	private boolean checkedOccupiedRoom = false;
 
 	
 	public Course(String courseName, String requestedEvening, int enrollmentNumber, String roomType, boolean science, boolean computer,
@@ -169,13 +172,6 @@ public class Course {
 		this.meetDayString = meetDayString;
 	}
 
-
-
-
-
-
-
-
 	public boolean isRoomFound() {
 		return roomFound;
 	}
@@ -189,6 +185,50 @@ public class Course {
 
 	public void setRoomFound(boolean roomFound) {
 		this.roomFound = roomFound;
+	}
+
+
+
+
+
+
+
+
+	public boolean isCheckedDifferentCampus() {
+		return checkedDifferentCampus;
+	}
+
+
+
+
+
+
+
+
+	public void setCheckedDifferentCampus(boolean checkedDifferentCampus) {
+		this.checkedDifferentCampus = checkedDifferentCampus;
+	}
+
+
+
+
+
+
+
+
+	public boolean isCheckedOccupiedRoom() {
+		return checkedOccupiedRoom;
+	}
+
+
+
+
+
+
+
+
+	public void setCheckedOccupiedRoom(boolean checkedOccupiedRoom) {
+		this.checkedOccupiedRoom = checkedOccupiedRoom;
 	}
 	
 	
