@@ -478,6 +478,8 @@ public class Gui extends JFrame {
 	///////////////////////// Schedule Checking Methods/////////////////////////
 	///////////////////////////////////////////////////////////////////////////
 
+
+	
 	public void checkUnassignedComputer() {
 		System.out.println("\nUnassigned Computer Courses:");
 		System.out.println("***********************************************");
@@ -496,8 +498,6 @@ public class Gui extends JFrame {
 		// Total Computer Class Count
 		int compTotal = 0;
 
-		// boolean to check if the room was found, used to increment count
-		boolean roomFound = false;
 
 		// Print all unassigned courses in the computer course list
 		for (Course course : computerCourseList) {
@@ -525,16 +525,16 @@ public class Gui extends JFrame {
 			computerAllScheduled = true;
 			System.out.println("All Computer Courses Assigned!\n");
 		} else {
-			// We didn't find rooms for all courses
+			//we need to reschedule courses
 			System.out.println("Rescheduling " + compCount + " course(s)");
-			resassignComputerCourse();
+			
+			//sort the list
+			sortUnassignedList(unassignedComputerCourseList);
+			
+			//look in different campuses
+			checkDiffComputerCampus();
 		}
 
-		// FIXME delete after testing
-		/*for (Course course : unassignedComputerCourseList) {
-			System.out.println("Unassigned Science course: " + course.getCourseName());
-
-		}*/
 	}
 
 	public void checkUnassignedScience() {
@@ -570,14 +570,16 @@ public class Gui extends JFrame {
 			scienceAllScheduled = true;
 			System.out.println("All Science Courses Assigned!\n");
 		} else {
+			//we need to reschedule courses
 			System.out.println("Rescheduling " + sciCount + " course(s)");
+			
+			//sort the list
+			sortUnassignedList(unassignedScienceCourseList);
+			
+			//look in different campuses
+			checkDiffScienceCampus();
 		}
 
-		// FIXME delete after testing
-		/*for (Course course : unassignedScienceCourseList) {
-			System.out.println("Unassigned Science course: " + course.getCourseName());
-
-		}*/
 	}
 
 	public void checkUnassignedRegular() {
@@ -615,54 +617,37 @@ public class Gui extends JFrame {
 			regularAllScheduled = true;
 			System.out.println("All Regular Courses Assigned!\n");
 		} else {
+			//we need to reschedule courses
 			System.out.println("Rescheduling " + regCount + " course(s)");
+			
+			//sort the list
+			sortUnassignedList(unassignedRegularCourseList);
+			
+			//look in different campuses
+			checkDiffRegularCampus();
 		}
 
-		// FIXME delete after testing
-		/*for (Course course : unassignedRegularCourseList) {
-			System.out.println("Unassigned Science course: " + course.getCourseName());
-
-		}*/
 	}
 
 	///////////////////////////////////////////////////////////////////////
 	///////////////////////// Re-assignment Methods/////////////////////////
 	///////////////////////////////////////////////////////////////////////
 
-	// FIXME works if another available room at other campus
-	public void resassignComputerCourse() {
-
-		if (!checkedDifferentComputerCampus) {
-			// see if a new campus is a fix
-			checkDiffComputerCampus();
-		} else if (!checkedOccupiedComputerRoom) {
-			//FIXME implement
-			checkOccupiedCompRooms();
-			return;
-
-		} else {
-			
-			//FIXME, this will not be good for recursion
-			// we have checked both re-assignment methods
-			checkedDifferentComputerCampus = false;
-			checkedOccupiedComputerRoom = false;
-			return;
-		}
-
-		checkUnassignedComputer();
-
-	}
-
 	private void checkDiffComputerCampus() {
 
+		//for all unassigned courses
 		for (Course course : unassignedComputerCourseList) {
+			//if run is not found yet
 			if (!course.isRoomFound()) {
+				//if it is not lower division
 				if (!course.isLowerDivision()) {
 					// This is for upper division courses, they can go to any campus
 					for (int i = 0; i < computerClassRoomList.size(); i++) {
+						//if computer room capacity is greaterThanOrEqualTo enrollement number, and room is empty
 						if (course.getEnrollmentNumber() <= computerClassRoomList.get(i).getCapacity()
 								&& computerClassRoomList.get(i).getAvailiabilitySchedule()[course
 										.getMeetDayNum()] == null) {
+							//assign the course to that room
 							computerClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
 							// We found a room!!! YAY!
 							course.setRoomFound(true);
@@ -673,10 +658,13 @@ public class Gui extends JFrame {
 				} else {
 					// This is for lower division courses, they can only go to compatible campuses
 					for (int i = 0; i < computerClassRoomList.size(); i++) {
+						//only look at lower division compatible rooms
 						if (computerClassRoomList.get(i).isLowerDivisionCompatible()) {
+							//room size fits course, and is empty
 							if (course.getEnrollmentNumber() <= computerClassRoomList.get(i).getCapacity()
 									&& computerClassRoomList.get(i).getAvailiabilitySchedule()[course
 											.getMeetDayNum()] == null) {
+								//assign the course to that room
 								computerClassRoomList.get(i).getAvailiabilitySchedule()[course
 										.getMeetDayNum()] = course;
 								// We found a room!!! YAY!
@@ -688,18 +676,109 @@ public class Gui extends JFrame {
 					}//end else for loop
 				}//end inner else
 			}//end outer if 
-		}
-		// we checked if the solution is to change campuses
-		checkedDifferentComputerCampus = true;
+		}//end for each
 		
-		System.out.println("We tried changing campuses: " + checkedDifferentComputerCampus);
+		//re-check if any are unassigned
+		checkUnassignedComputer();
 	}
 	
-	//FIXME implement
-	public void checkOccupiedCompRooms(){
-		
-	}
+	private void checkDiffScienceCampus() {
 
+		//for all unassigned courses
+		for (Course course : unassignedScienceCourseList) {
+			//where room is not found
+			if (!course.isRoomFound()) {
+				//and is not lower division
+				if (!course.isLowerDivision()) {
+					// This is for upper division courses, they can go to any campus
+					for (int i = 0; i < scienceClassRoomList.size(); i++) {
+						//look only at rooms that fit the course and is empty
+						if (course.getEnrollmentNumber() <= scienceClassRoomList.get(i).getCapacity()
+								&& scienceClassRoomList.get(i).getAvailiabilitySchedule()[course
+										.getMeetDayNum()] == null) {
+							//assign the course to this room
+							scienceClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
+							// We found a room!!! YAY!
+							course.setRoomFound(true);
+
+							break;
+						}
+					}
+				} else {
+					// This is for lower division courses, they can only go to compatible campuses
+					for (int i = 0; i < scienceClassRoomList.size(); i++) {
+						//only look in lower division compatible rooms
+						if (scienceClassRoomList.get(i).isLowerDivisionCompatible()) {
+							//room fits the course size, and is empty
+							if (course.getEnrollmentNumber() <= scienceClassRoomList.get(i).getCapacity()
+									&& scienceClassRoomList.get(i).getAvailiabilitySchedule()[course
+											.getMeetDayNum()] == null) {
+								//assign the course to the classroom
+								scienceClassRoomList.get(i).getAvailiabilitySchedule()[course
+										.getMeetDayNum()] = course;
+								// We found a room!!! YAY!
+								course.setRoomFound(true);
+
+								break;
+							}//end else inner if
+						}//end else outer if
+					}//end else for loop
+				}//end inner else
+			}//end outer if 
+		}//end for each
+		
+		//re-check if any are unassigned
+		checkUnassignedScience();
+	}
+	
+	private void checkDiffRegularCampus() {
+		//for all unassigned rooms
+		for (Course course : unassignedRegularCourseList) {
+			//and room is yet to be found
+			if (!course.isRoomFound()) {
+				//is not a lower division course
+				if (!course.isLowerDivision()) {
+					// This is for upper division courses, they can go to any campus
+					for (int i = 0; i < regularClassRoomList.size(); i++) {
+						//classroom would fit the course, and is empty
+						if (course.getEnrollmentNumber() <= regularClassRoomList.get(i).getCapacity()
+								&& regularClassRoomList.get(i).getAvailiabilitySchedule()[course
+										.getMeetDayNum()] == null) {
+							//assign the course to the classroom
+							regularClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
+							// We found a room!!! YAY!
+							course.setRoomFound(true);
+
+							break;
+						}
+					}
+				} else {
+					// This is for lower division courses, they can only go to compatible campuses
+					for (int i = 0; i < regularClassRoomList.size(); i++) {
+						//only look at rooms that are lower division compatible
+						if (regularClassRoomList.get(i).isLowerDivisionCompatible()) {
+							//room is big enough to fit the course, and is empty
+							if (course.getEnrollmentNumber() <= regularClassRoomList.get(i).getCapacity()
+									&& regularClassRoomList.get(i).getAvailiabilitySchedule()[course
+											.getMeetDayNum()] == null) {
+								//assign the course to this classroom
+								regularClassRoomList.get(i).getAvailiabilitySchedule()[course
+										.getMeetDayNum()] = course;
+								// We found a room!!! YAY!
+								course.setRoomFound(true);
+
+								break;
+							}//end else inner if
+						}//end else outer if
+					}//end else for loop
+				}//end inner else
+			}//end outer if 
+		}//end for each
+		//re-check if any are unassigned
+		checkUnassignedRegular();	
+	}
+	
+	
 	//////////////////////////////////////////////////////////////////
 	///////////////////////// Printing Methods/////////////////////////
 	//////////////////////////////////////////////////////////////////
@@ -807,7 +886,7 @@ public class Gui extends JFrame {
 	}
 
 	/**
-	 * Prints the Regular Classroom Schedule to File
+	 * Prints the Classroom Schedule to File
 	 */
 	public void printScheduleBuilder(ArrayList<ClassRoom> classrooms) {
 		
@@ -892,7 +971,6 @@ public class Gui extends JFrame {
 	 */
 	public static void sortRoomList(ArrayList <ClassRoom> classrooms) {
 
-		//System.out.println("Sorting the Computer Room objects by class size.......");
 		Collections.sort(classrooms, new Comparator<ClassRoom>() {
 
 			@Override
@@ -913,7 +991,6 @@ public class Gui extends JFrame {
 	 */
 	public static void sortClassList(ArrayList <Course> courses) {
 
-		//System.out.println("Sorting the Computer Course objects by Enrollment size.......");
 		Collections.sort(courses, new Comparator<Course>() {
 
 			@Override
@@ -927,6 +1004,24 @@ public class Gui extends JFrame {
 
 		});
 	}
+	
+	/**
+	 * Sort the unassigned arrays by lower division boolean (Sourced from stackoverflow.com 
+	 * http://stackoverflow.com/questions/28002342/sort-an-arraylist-by-primitive-boolean-type)
+	 * @param courses
+	 */
+	public static void sortUnassignedList(ArrayList <Course> courses){
+		
+		Collections.sort(courses, new Comparator<Course>() {
+	        @Override
+	        public int compare(Course c1, Course c2) {
+	            return Boolean.compare(c2.isLowerDivision(), c1.isLowerDivision());
+	        }
+	    });
+		
+
+	}
+	
 	
 	
 

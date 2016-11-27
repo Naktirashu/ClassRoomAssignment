@@ -27,8 +27,9 @@ public class Course {
 	private String preferredLocation;
 	//used to determined if we have found a location for this course
 	private boolean roomFound = false;
-	
+	//used to check if we check a different campus during conflicts 
 	private boolean checkedDifferentCampus = false;
+	//used for future use, unimplemented method
 	private boolean checkedOccupiedRoom = false;
 
 	
