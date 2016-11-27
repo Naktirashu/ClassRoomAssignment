@@ -177,15 +177,17 @@ public class Gui extends JFrame {
 					System.out.println("Calculating Schedule!!!");
 					// FIXME Add calculation logic here
 
-					findComputerSchedule();
+					findRoomSchedule(computerCourseList);
 					// How many computer classes are unassigned? Print them!
 					checkUnassigned(computerCourseList);
 
-					findScienceSchedule();
+					
+					findRoomSchedule(scienceCourseList);
 					// How many science classes are unassigned? Print them!
 					checkUnassigned(scienceCourseList);
 
 					findRegularSchedule();
+					
 					// How many regular classes are unassigned? Print them!
 					checkUnassigned(regularCourseList);
 
@@ -197,10 +199,10 @@ public class Gui extends JFrame {
 
 				} else {
 					if (!classData) {
-						//Class data wasn't entered
+						// Class data wasn't entered
 						System.out.println("Please Select Class Room Data File!!!");
 					} else if (!courseData) {
-						//course data wasn't entered
+						// course data wasn't entered
 						System.out.println("Please Select Course Data File!!!");
 					}
 				}
@@ -211,12 +213,11 @@ public class Gui extends JFrame {
 		btnMakeSchedule.setBounds(10, 138, 150, 55);
 		contentPane.add(btnMakeSchedule);
 	}
-	
-	
+
 	///////////////////////////////////////////////////////////////////////
 	///////////////////////// Data Parsing Methods/////////////////////////
 	///////////////////////////////////////////////////////////////////////
-	
+
 	private void parseClassRoomData(File selectedFile) {
 		try {
 			BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(selectedFile)));
@@ -236,7 +237,7 @@ public class Gui extends JFrame {
 
 					// this is for the creation of new classroom obj's
 					else {
-						//temp array to hold the split strings
+						// temp array to hold the split strings
 						String[] tmpArray = line.split("\\s+");
 
 						// checks to see if this is a properly formatted
@@ -253,8 +254,8 @@ public class Gui extends JFrame {
 						int capacity = Integer.parseInt(tmpArray[2]);
 
 						String roomType = tmpArray[3];
-						
-						//defualt the booleans
+
+						// defualt the booleans
 						boolean science = false;
 						boolean computer = false;
 						boolean regular = false;
@@ -386,25 +387,36 @@ public class Gui extends JFrame {
 		sortAll();
 
 	}
-	
+
 	/////////////////////////////////////////////////////////////////////////////
-	///////////////////////// Initial Scheduling Methods/////////////////////////
+	///////////////////////// Initial Scheduling
+	///////////////////////////////////////////////////////////////////////////// Methods/////////////////////////
 	/////////////////////////////////////////////////////////////////////////////
 
-	public void findComputerSchedule() {
-		try{
-			//for all courses in list
-			for (Course course : computerCourseList) {
-				//look through all classrooms
-				for (int i = 0; i < computerClassRoomList.size(); i++) {
-					//if preferred campus = classroom campus
-					if (course.getPreferredLocation().equals(computerClassRoomList.get(i).getLocation())) {
-						//if enrollment of course is lessThanOrEqual to classrooms capacity
-						if (course.getEnrollmentNumber() <= computerClassRoomList.get(i).getCapacity()
-								&& computerClassRoomList.get(i).getAvailiabilitySchedule()[course
-								                                                           .getMeetDayNum()] == null) {
-							//assign the course to the classroom's weekly schedule if no class is assigned there yet
-							computerClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
+	/**
+	 * Used to find computer and science schedules
+	 * @param courses
+	 */
+	public void findRoomSchedule(ArrayList <Course> courses) {
+		
+		// only run if we have computer courses and classrooms
+		try {
+			
+			ArrayList<ClassRoom> list = pickList(courses.get(0).getRoomType());
+			// for all courses in list
+			for (Course course : courses) {
+				// look through all classrooms
+				for (int i = 0; i < list.size(); i++) {
+					// if preferred campus = classroom campus
+					if (course.getPreferredLocation().equals(list.get(i).getLocation())) {
+						// if enrollment of course is lessThanOrEqual to
+						// classrooms capacity
+						if (course.getEnrollmentNumber() <= list.get(i).getCapacity()
+								&& list.get(i).getAvailiabilitySchedule()[course
+										.getMeetDayNum()] == null) {
+							// assign the course to the classroom's weekly
+							// schedule if no class is assigned there yet
+							list.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
 							// We found a room!!! YAY!
 							course.setRoomFound(true);
 							break;
@@ -412,99 +424,61 @@ public class Gui extends JFrame {
 					}
 				}
 			}
-			
-		}catch(Exception e){
-			System.out.println("No computer course/classroom data");
-		}
-		
-	}
-
-	public void findScienceSchedule() {
-		
-		try{
-			//for all courses in list
-			for (Course course : scienceCourseList) {
-				//look through all classrooms
-				for (int i = 0; i < scienceClassRoomList.size(); i++) {
-					//if preferred campus = classroom campus
-					if (course.getPreferredLocation().equals(scienceClassRoomList.get(i).getLocation())) {
-						//if enrollment of course is lessThanOrEqual to classrooms capacity
-						if (course.getEnrollmentNumber() <= scienceClassRoomList.get(i).getCapacity()
-								&& scienceClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] == null) {
-							//assign the course to the classroom's weekly schedule if no class is assigned there yet
-							scienceClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
-							// We found a room!!! YAY!
-							course.setRoomFound(true);
-							break;
-						}
-					}
-				}
-			}
-			
-		}catch(Exception e){
-			System.out.println("No science course/classroom data");
+		} catch (Exception e) {
+			System.out.println("No course/classroom data for this type");
 		}
 
-		// printScienceSchedule();
 	}
 
+
+	/**
+	 * Finds the schedule for regular courses, needs to look at all types of classrooms at the campus
+	 */
 	public void findRegularSchedule() {
-		try{
-			//for all courses in list
+		// only run if we have regular courses and classrooms
+		try {
+			// for all courses in list
 			for (Course course : regularCourseList) {
-				//look through all classrooms
-				try{
+				// look through all classrooms
+				try {
 					for (int i = 0; i < regularClassRoomList.size(); i++) {
-						//if preferred campus = classroom campus
+						// if preferred campus = classroom campus
 						if (course.getPreferredLocation().equals(regularClassRoomList.get(i).getLocation())) {
-							//if enrollment of course is lessThanOrEqual to classrooms capacity
+							// if enrollment of course is lessThanOrEqual to
+							// classrooms capacity
 							if (course.getEnrollmentNumber() <= regularClassRoomList.get(i).getCapacity()
-									&& regularClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] == null) {
-								//assign the course to the classroom's weekly schedule if no class is assigned there yet
+									&& regularClassRoomList.get(i).getAvailiabilitySchedule()[course
+											.getMeetDayNum()] == null) {
+								// assign the course to the classroom's weekly
+								// schedule if no class is assigned there yet
 								regularClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
 								// We found a room!!! YAY!
 								course.setRoomFound(true);
 								break;
 							}
 						}
-					}	
-				}catch (Exception e1){
+					}
+				} catch (Exception e1) {
 					System.out.println("No Regular Class Rooms!");
 				}
-				
-				try{
-					//If still no room on campus, Regular classes can go into any room, check science rooms
-					if(!course.isRoomFound()){
+
+				try {
+					// If still no room on campus, Regular classes can go into
+					// any room, check science rooms
+					if (!course.isRoomFound()) {
 						for (int i = 0; i < scienceClassRoomList.size(); i++) {
-							//if preferred campus = classroom campus
+							// if preferred campus = classroom campus
 							if (course.getPreferredLocation().equals(scienceClassRoomList.get(i).getLocation())) {
-								//if enrollment of course is lessThanOrEqual to classrooms capacity
+								// if enrollment of course is lessThanOrEqual to
+								// classrooms capacity
 								if (course.getEnrollmentNumber() <= scienceClassRoomList.get(i).getCapacity()
-										&& scienceClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] == null) {
-									//assign the course to the classroom's weekly schedule if no class is assigned there yet
-									scienceClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
-									// We found a room!!! YAY!
-									course.setRoomFound(true);
-									break;
-								}
-							}
-						}
-					}	
-				}catch(Exception e2){
-					System.out.println("No Science Class Rooms!");
-				}
-				
-				try{
-					//If still no room on campus, Regular classes can go into any room, check computer rooms
-					if(!course.isRoomFound()){
-						for (int i = 0; i < computerClassRoomList.size(); i++) {
-							//if preferred campus = classroom campus
-							if (course.getPreferredLocation().equals(computerClassRoomList.get(i).getLocation())) {
-								//if enrollment of course is lessThanOrEqual to classrooms capacity
-								if (course.getEnrollmentNumber() <= computerClassRoomList.get(i).getCapacity()
-										&& computerClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] == null) {
-									//assign the course to the classroom's weekly schedule if no class is assigned there yet
-									computerClassRoomList.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
+										&& scienceClassRoomList.get(i).getAvailiabilitySchedule()[course
+												.getMeetDayNum()] == null) {
+									// assign the course to the classroom's
+									// weekly schedule if no class is assigned
+									// there yet
+									scienceClassRoomList.get(i).getAvailiabilitySchedule()[course
+											.getMeetDayNum()] = course;
 									// We found a room!!! YAY!
 									course.setRoomFound(true);
 									break;
@@ -512,47 +486,68 @@ public class Gui extends JFrame {
 							}
 						}
 					}
-					
-				}catch(Exception e3){
+				} catch (Exception e2) {
+					System.out.println("No Science Class Rooms!");
+				}
+
+				try {
+					// If still no room on campus, Regular classes can go into
+					// any room, check computer rooms
+					if (!course.isRoomFound()) {
+						for (int i = 0; i < computerClassRoomList.size(); i++) {
+							// if preferred campus = classroom campus
+							if (course.getPreferredLocation().equals(computerClassRoomList.get(i).getLocation())) {
+								// if enrollment of course is lessThanOrEqual to
+								// classrooms capacity
+								if (course.getEnrollmentNumber() <= computerClassRoomList.get(i).getCapacity()
+										&& computerClassRoomList.get(i).getAvailiabilitySchedule()[course
+												.getMeetDayNum()] == null) {
+									// assign the course to the classroom's
+									// weekly schedule if no class is assigned
+									// there yet
+									computerClassRoomList.get(i).getAvailiabilitySchedule()[course
+											.getMeetDayNum()] = course;
+									// We found a room!!! YAY!
+									course.setRoomFound(true);
+									break;
+								}
+							}
+						}
+					}
+
+				} catch (Exception e3) {
 					System.out.println("No Computer Class Rooms!");
 				}
 			}
-			
-		}catch(Exception e){
+
+		} catch (Exception e) {
 			System.out.println("No regular course/classroom data");
 		}
-		
+
 	}
-
-
 
 	///////////////////////////////////////////////////////////////////////////
 	///////////////////////// Schedule Checking Methods/////////////////////////
 	///////////////////////////////////////////////////////////////////////////
 
+	public void checkUnassigned(ArrayList<Course> courses) {
 
-	public void checkUnassigned(ArrayList <Course> courses) {
-		
 		ArrayList<Course> list = null;
 		String roomType = "";
-		
-		try{
+
+		try {
 			list = pickUnassignedList(courses.get(0).getRoomType());
 			roomType = courses.get(0).getRoomType();
-			
-		}catch(Exception ex){
+
+		} catch (Exception ex) {
 			return;
 		}
-		
 		// Unassigned Regular Class Count
 		int count = 0;
 		// Total Regular Class Count
 		int total = 0;
 		// boolean to check if the room was found, used to increment count
 		boolean roomFound = false;
-
-		//System.out.println("\nUnassigned Regular Courses:");
-		//System.out.println("***********************************************");
 
 		// Print all unassigned courses in the regular course list
 		for (Course course : courses) {
@@ -561,7 +556,8 @@ public class Gui extends JFrame {
 				list.add(course);
 				// increment unassigned count
 				count++;
-				System.out.println("Unassigned Course: " + course.getCourseName() + " Requested location: " + course.getPreferredLocation());
+				System.out.println("Unassigned Course: " + course.getCourseName() + " Requested location: "
+						+ course.getPreferredLocation());
 			} else {
 				roomFound = true;
 			}
@@ -578,26 +574,26 @@ public class Gui extends JFrame {
 
 			System.out.println("All " + roomType + " Courses Assigned!\n");
 		} else {
-			//we need to reschedule courses
+			// we need to reschedule courses
 			System.out.println("Rescheduling " + count + " course(s)");
-			
-			//sort the list
+
+			// sort the list
 			sortUnassignedList(list);
-			
-				switch(courses.get(0).getRoomType()){
-				case "R":
-					//look in different campuses
-					checkDiffRegularCampus();				
-					break;
-				case "C":
-					//look in different campuses
-					checkDiffComputerCampus();
-					break;
-				case "S":
-					//look in different campuses
-					checkDiffScienceCampus();
-					break;
-				}		
+
+			switch (courses.get(0).getRoomType()) {
+			case "R":
+				// look in different campuses
+				checkDiffRegularCampus();
+				break;
+			case "C":
+				// look in different campuses
+				checkDiffComputerCampus();
+				break;
+			case "S":
+				// look in different campuses
+				checkDiffScienceCampus();
+				break;
+			}
 		}
 	}
 
@@ -607,79 +603,76 @@ public class Gui extends JFrame {
 
 	private void checkDiffComputerCampus() {
 
-		//for all unassigned rooms
+		// for all unassigned rooms
 		for (Course course : unassignedComputerCourseList) {
-			//and room is yet to be found
+			// and room is yet to be found
 			if (!course.isRoomFound()) {
-				//is lower division?
-				if (!course.isLowerDivision()){
-					checkDiffCampus(course);					
-				}else{
-					checkDiffCampusLowerDivision(course);			
+				// is lower division?
+				if (!course.isLowerDivision()) {
+					checkDiffCampus(course);
+				} else {
+					checkDiffCampusLowerDivision(course);
 				}
 			}
-		}//end for loop 
-		
-		//re-check if any are unassigned
-		//checkUnassignedComputer();
-		checkUnassigned(computerCourseList);	
+		} // end for loop
+
+		// re-check if any are unassigned
+		checkUnassigned(computerCourseList);
 	}
-	
+
 	private void checkDiffScienceCampus() {
 
-		//for all unassigned rooms
+		// for all unassigned rooms
 		for (Course course : unassignedScienceCourseList) {
-			//and room is yet to be found
+			// and room is yet to be found
 			if (!course.isRoomFound()) {
-				//is lower division?
-				if (!course.isLowerDivision()){
-					checkDiffCampus(course);					
-				}else{
-					checkDiffCampusLowerDivision(course);			
+				// is lower division?
+				if (!course.isLowerDivision()) {
+					checkDiffCampus(course);
+				} else {
+					checkDiffCampusLowerDivision(course);
 				}
 			}
-		}//end for loop 
-								
-		//re-check if any are unassigned
-		//checkUnassignedScience();
-		checkUnassigned(scienceCourseList);	
+		} // end for loop
+
+		// re-check if any are unassigned
+		checkUnassigned(scienceCourseList);
 	}
 
 	private void checkDiffRegularCampus() {
-		//for all unassigned rooms
+		// for all unassigned rooms
 		for (Course course : unassignedRegularCourseList) {
-			//and room is yet to be found
+			// and room is yet to be found
 			if (!course.isRoomFound()) {
-				//is lower division?
-				if (!course.isLowerDivision()){
-					checkDiffCampus(course);					
-				}else{
-					checkDiffCampusLowerDivision(course);			
+				// is lower division?
+				if (!course.isLowerDivision()) {
+					checkDiffCampus(course);
+				} else {
+					checkDiffCampusLowerDivision(course);
 				}
-				
+
 			}
-		}//end for loop 
-		
-		//re-check if any are unassigned
-		checkUnassigned(regularCourseList);	
+		} // end for loop
+
+		// re-check if any are unassigned
+		checkUnassigned(regularCourseList);
 	}
-	
 
 	/**
 	 * Looks through Non lower division classrooms and assigns the course
+	 * 
 	 * @param course
 	 */
-	private void checkDiffCampus(Course course){
-		
+	private void checkDiffCampus(Course course) {
+
 		ArrayList<ClassRoom> list = pickList(course.getRoomType());
-		
+
 		// This is for upper division courses, they can go to any campus
 		for (int i = 0; i < list.size(); i++) {
-			//classroom would fit the course, and is empty
+			// classroom would fit the course, and is empty
 			if (course.getEnrollmentNumber() <= list.get(i).getCapacity()
-					&& list.get(i).getAvailiabilitySchedule()[course
-							.getMeetDayNum()] == null) {
-				//assign the course to the classroom
+					&& list.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] == null) {
+				// assign the course to the classroom
 				list.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
 				// We found a room!!! YAY!
 				course.setRoomFound(true);
@@ -691,22 +684,21 @@ public class Gui extends JFrame {
 
 	/**
 	 * Looks through lower division compatible classrooms and assigns the course
+	 * 
 	 * @param course
 	 */
-	private void checkDiffCampusLowerDivision(Course course){
-		
+	private void checkDiffCampusLowerDivision(Course course) {
+
 		ArrayList<ClassRoom> list = pickList(course.getRoomType());
-		
+
 		for (int i = 0; i < list.size(); i++) {
-			//only look at rooms that are lower division compatible
+			// only look at rooms that are lower division compatible
 			if (list.get(i).isLowerDivisionCompatible()) {
-				//room is big enough to fit the course, and is empty
+				// room is big enough to fit the course, and is empty
 				if (course.getEnrollmentNumber() <= list.get(i).getCapacity()
-						&& list.get(i).getAvailiabilitySchedule()[course
-								.getMeetDayNum()] == null) {
-					//assign the course to this classroom
-					list.get(i).getAvailiabilitySchedule()[course
-							.getMeetDayNum()] = course;
+						&& list.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] == null) {
+					// assign the course to this classroom
+					list.get(i).getAvailiabilitySchedule()[course.getMeetDayNum()] = course;
 					// We found a room!!! YAY!
 					course.setRoomFound(true);
 
@@ -715,18 +707,18 @@ public class Gui extends JFrame {
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Picks the appropriate list, used to add courses to classroom lists
+	 * 
 	 * @param listChar
 	 * @return list
 	 */
-	private static ArrayList<ClassRoom> pickList(String listChar){
-			
+	private static ArrayList<ClassRoom> pickList(String listChar) {
+
 		ArrayList<ClassRoom> list = null;
-		
-		switch(listChar){
+
+		switch (listChar) {
 		case "R":
 			list = regularClassRoomList;
 			break;
@@ -737,38 +729,39 @@ public class Gui extends JFrame {
 			list = scienceClassRoomList;
 			break;
 		}
-		
+
 		return list;
-		
+
 	}
-	
-	
+
 	/**
 	 * Picks the appropriate list, used to add courses to classroom lists
+	 * 
 	 * @param listChar
 	 * @return list
 	 */
-	private static ArrayList<Course> pickUnassignedList(String listChar){
-			
+	private static ArrayList<Course> pickUnassignedList(String listChar) {
+
 		ArrayList<Course> list = null;
-		
-		switch(listChar){
+
+		switch (listChar) {
 		case "R":
 			list = unassignedRegularCourseList;
 			break;
 		case "C":
-			list = unassignedComputerCourseList;;
+			list = unassignedComputerCourseList;
+			;
 			break;
 		case "S":
-			list = unassignedScienceCourseList;;
+			list = unassignedScienceCourseList;
+			;
 			break;
 		}
-		
+
 		return list;
-		
+
 	}
-	
-	
+
 	//////////////////////////////////////////////////////////////////
 	///////////////////////// Printing Methods/////////////////////////
 	//////////////////////////////////////////////////////////////////
@@ -777,28 +770,27 @@ public class Gui extends JFrame {
 	 * Prints the finished schedule
 	 */
 	private void printSchedule() {
-		
+
 		writer.println("");
 		writer.println("\n*********************************** \n");
 		writer.println("Regular Class Rooms:");
 		writer.println("\n*********************************** \n");
-		
+
 		printScheduleBuilder(regularClassRoomList);
-		
+
 		writer.println("");
 		writer.println("\n*********************************** \n");
 		writer.println("Science Class Rooms:");
 		writer.println("\n*********************************** \n");
-		
+
 		printScheduleBuilder(scienceClassRoomList);
-		
+
 		writer.println("");
 		writer.println("\n*********************************** \n");
 		writer.println("Computer Class Rooms:");
 		writer.println("\n*********************************** \n");
-		
+
 		printScheduleBuilder(computerClassRoomList);
-		
 
 	}
 
@@ -879,7 +871,7 @@ public class Gui extends JFrame {
 	 * Prints the Classroom Schedule to File
 	 */
 	public void printScheduleBuilder(ArrayList<ClassRoom> classrooms) {
-		
+
 		for (int i = 0; i < classrooms.size(); i++) {
 			writer.println("		Room " + i);
 			writer.println("Name is: " + classrooms.get(i).getRoomNumber());
@@ -891,9 +883,8 @@ public class Gui extends JFrame {
 				String day = dayOfTheWeek(j);
 
 				try {
-					writer.println("  " + day + ": "
-							+ classrooms.get(i).getAvailiabilitySchedule()[j].getCourseName() + " Enrolled: "
-							+ classrooms.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber()
+					writer.println("  " + day + ": " + classrooms.get(i).getAvailiabilitySchedule()[j].getCourseName()
+							+ " Enrolled: " + classrooms.get(i).getAvailiabilitySchedule()[j].getEnrollmentNumber()
 							+ ", Req Location: "
 							+ classrooms.get(i).getAvailiabilitySchedule()[j].getPreferredLocation());
 
@@ -905,8 +896,7 @@ public class Gui extends JFrame {
 			writer.println("\n------------------------------------- \n");
 		}
 	}
-	
-	
+
 	/**
 	 * Used to convert array index integer to day of the week String, used for
 	 * printing
@@ -942,24 +932,23 @@ public class Gui extends JFrame {
 	 * Call the Sort Methods
 	 */
 	private void sortAll() {
-		
+
 		sortRoomList(computerClassRoomList);
 		sortRoomList(scienceClassRoomList);
 		sortRoomList(regularClassRoomList);
-		
-		
+
 		sortClassList(computerCourseList);
 		sortClassList(scienceCourseList);
 		sortClassList(regularCourseList);
-		
 
 	}
-	
+
 	/**
 	 * Used to sort the class room array lists by lowest capacity to highest
+	 * 
 	 * @param classrooms
 	 */
-	public static void sortRoomList(ArrayList <ClassRoom> classrooms) {
+	public static void sortRoomList(ArrayList<ClassRoom> classrooms) {
 
 		Collections.sort(classrooms, new Comparator<ClassRoom>() {
 
@@ -974,12 +963,11 @@ public class Gui extends JFrame {
 
 		});
 	}
-	
+
 	/**
-	 * Used to sort the Course type obj's by enrollment, lowest to
-	 * highest
+	 * Used to sort the Course type obj's by enrollment, lowest to highest
 	 */
-	public static void sortClassList(ArrayList <Course> courses) {
+	public static void sortClassList(ArrayList<Course> courses) {
 
 		Collections.sort(courses, new Comparator<Course>() {
 
@@ -994,26 +982,24 @@ public class Gui extends JFrame {
 
 		});
 	}
-	
+
 	/**
-	 * Sort the unassigned arrays by lower division boolean (Sourced from stackoverflow.com 
+	 * Sort the unassigned arrays by lower division boolean (Sourced from
+	 * stackoverflow.com
 	 * http://stackoverflow.com/questions/28002342/sort-an-arraylist-by-primitive-boolean-type)
+	 * 
 	 * @param courses
 	 */
-	public static void sortUnassignedList(ArrayList <Course> courses){
-		
+	public static void sortUnassignedList(ArrayList<Course> courses) {
+
 		Collections.sort(courses, new Comparator<Course>() {
-	        @Override
-	        public int compare(Course c1, Course c2) {
-	            return Boolean.compare(c2.isLowerDivision(), c1.isLowerDivision());
-	        }
-	    });
-		
+			@Override
+			public int compare(Course c1, Course c2) {
+				return Boolean.compare(c2.isLowerDivision(), c1.isLowerDivision());
+			}
+		});
 
 	}
-	
-	
-	
 
 	/////////////////////////////////////////////////////////////////////
 	///////////////////////// Getters and Setters/////////////////////////
